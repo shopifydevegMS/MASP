@@ -97,6 +97,30 @@ test("Git policy: only masp land/resync (src/land.ts) and masp new (src/setup.ts
     assert.throws(() => gitWrite(".", args), /MASP git write policy/);
 });
 
+test("launcher: runs MASP from a clone, and explains (instead of crashing) when installed inside node_modules", async () => {
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const { spawnSync } = await import("node:child_process");
+  const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+  assert.equal(pkg.bin.masp, "bin/masp.mjs", "the installed command must go through the JavaScript launcher");
+  const ok = spawnSync(process.execPath, ["bin/masp.mjs", "--help"], { encoding: "utf8" });
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.match(ok.stdout, /Multi-Agent Shopify Protocol/);
+  // Simulate `npm install -g github:...`: a copy under node_modules.
+  const fake = path.join(".tmp", `nm-${process.pid}`, "node_modules", "masp", "bin");
+  fs.mkdirSync(fake, { recursive: true });
+  try {
+    fs.copyFileSync("bin/masp.mjs", path.join(fake, "masp.mjs"));
+    fs.copyFileSync("bin/masp.ts", path.join(fake, "masp.ts"));
+    const bad = spawnSync(process.execPath, [path.join(fake, "masp.mjs"), "--help"], { encoding: "utf8" });
+    assert.equal(bad.status, 1);
+    assert.match(bad.stderr, /installed inside node_modules[\s\S]*git clone https:\/\/github.com\/shopifydevegMS\/MASP.git/);
+    assert.doesNotMatch(bad.stderr, /ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING/);
+  } finally {
+    fs.rmSync(path.join(".tmp", `nm-${process.pid}`), { recursive: true, force: true });
+  }
+});
+
 test("Git policy: write commands are refused before Git is even started", () => {
   for (const args of [["commit", "-m", "x"], ["push"], ["reset", "--hard"], ["rebase", "main"], ["merge", "x"], ["worktree", "add", "x"], ["config", "user.name", "x"], ["checkout", "x"], ["stash"]])
     assert.throws(() => git(".", args), /MASP git policy/);

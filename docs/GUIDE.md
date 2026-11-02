@@ -36,7 +36,8 @@ What stays the same: Git is still the source of truth, your history is normal, a
     .masp/           MASP's own records (snapshots, journal, logs)
     masp.config.json
   ```
-* **Session**: one AI coding session working in one worktree (A, B, C...).
+* **Session**: one AI coding session (one Claude Code program, in its own terminal) working in its own worktree.
+  A workspace has several sessions (A, B, C...), and they all **run at the same time**.
 * **Controller** (`masp start`): watches the worktrees and copies finished, safe changes into `preview/`.
   It's the only thing allowed to write into `preview/`.
 * **Preview server** (`masp serve`): the one `shopify theme dev`, serving `preview/` to a hidden development theme.
@@ -51,12 +52,19 @@ Requirements: **Node.js 23.6 or newer** (`node --version`), **Git**, the **Shopi
 **Claude Code** for the AI sessions.
 
 ```powershell
-npm install -g "C:\tools\masp"      # the folder where you cloned MASP (it holds package.json)
-masp --help                               # check that it works
+git clone https://github.com/shopifydevegMS/MASP.git C:\tools\masp   # any folder works; this guide uses C:\tools\masp
+npm install -g C:\tools\masp                                          # gives you the 'masp' command
+masp --help                                                           # check that it works
 ```
 
-That gives you a `masp` command everywhere. MASP is a tool you run; nothing is added to your theme repository.
-(Without installing, `node "C:\tools\masp\bin\masp.ts" <command>` does the same.)
+That gives you a `masp` command in every terminal. MASP is a tool you run; nothing is added to your theme repository.
+
+* **Keep `C:\tools\masp` where it is.** The `masp` command links to it, and so do the session start scripts in each workspace.
+  If you move it, run `npm install -g <new folder>` again, and `masp agent --session <id>` in your workspaces to rewrite their scripts.
+* **To update MASP:** `git -C C:\tools\masp pull`. There's no need to install again.
+* **Don't install with `npm install -g github:shopifydevegMS/MASP`.** npm would put MASP inside `node_modules`, where Node can't run
+  its TypeScript files. If it happens, `masp` tells you and shows the steps above.
+* Without installing, `node C:\tools\masp\bin\masp.mjs <command>` does the same.
 
 ---
 
@@ -91,11 +99,33 @@ masp serve --store your-dev-store.myshopify.com
 ```
 The first time, the Shopify CLI asks you to log in in the browser. It prints the preview link (`http://127.0.0.1:9292`).
 
-**Terminals 3, 4...: one per AI session.**
+**Terminals 3, 4, 5...: one per AI session, all running at the same time.**
 ```powershell
-masp agent --session A            # shows where session A works and how to start it
+# terminal 3
 & .\agents\start-A.ps1            # starts Claude Code for session A, with its rules and permissions
+# terminal 4
+& .\agents\start-B.ps1
+# terminal 5
+& .\agents\start-C.ps1
 ```
+(`masp agent --session A` shows where session A works and how to start it.)
+
+**Working with them in parallel.** Type A's task and press Enter, then go straight to B's terminal and give it its task,
+then C's. Nothing waits for anything else: each session is a separate program, and the controller works in the background.
+In VS Code, use split terminals or terminal tabs, and rename them "A", "B" and "C" so you always know which session you're talking to.
+
+* Inside **one** session, Claude Code works on one task at a time, as usual. You can type your next message while it's busy;
+  it picks it up when it's ready.
+* `masp ready` waits only for that session's own publish, usually under a second.
+* MASP lets only one publish write to the preview at a time, but each takes milliseconds, so sessions don't notice.
+
+**Or give every session its task at once and let them run unattended** (good for clear, self-contained tasks):
+```powershell
+node C:\tools\masp\examples\run-agents.ts --config masp.config.json --task-A "..." --task-B "..." --task-C "..."
+```
+This starts all sessions in the background, with the same rules and limits, and waits until every one has finished.
+You can't chat with them while they run. Everything each session did is recorded in `agents\<id>.log.jsonl`.
+If `claude` isn't on your PATH, add `--claude "C:\path\to\claude.exe"`.
 
 > **Always start a session with its `start-<id>.ps1` script.** Never open a worktree and type plain `claude` there.
 > The script is what gives the session its MASP rules (`agents\A.md`) and its limits (`agents\A.settings.json`: only its own

@@ -13,15 +13,28 @@ and how the old worktree-and-merge commands map to MASP.
 
 Requirements: Node 23.6+ (runs TypeScript directly; no build step, no npm packages), Git 2.38+.
 
+## Install (once per computer)
+
 ```powershell
-npm install -g "C:\tools\masp"     # once per computer (the folder where you cloned MASP): gives you the 'masp' command
+git clone https://github.com/shopifydevegMS/MASP.git C:\tools\masp
+npm install -g C:\tools\masp      # gives you the 'masp' command
+masp --help
+```
+
+* **Keep the cloned folder.** The `masp` command links to it, so it must stay where it is.
+* **Update** with `git -C C:\tools\masp pull`. There's no need to install again.
+* **Don't use `npm install -g github:shopifydevegMS/MASP`.** npm would copy MASP into `node_modules`, where Node can't run its
+  TypeScript files. MASP detects this and prints these steps instead.
+
+Then start a piece of work on a theme (see the guide):
+```powershell
 masp new E:\work\round1 --repo <your theme repo> --branch main --sessions A,B
 ```
 
-## Try it
+## Try it (from the cloned folder)
 
 ```powershell
-npm test                  # 70 automated tests, each in its own throwaway sandbox under .tmp\
+npm test                  # 71 automated tests, each in its own throwaway sandbox under .tmp\
 npm run demo              # builds sandbox\demo and runs two simulated agents
 node examples/perf.ts     # about 2 minutes on a generated 1,000-file theme
 node examples/setup-real.ts --source <theme folder> --target <new folder>   # MASP around a copy of a real theme

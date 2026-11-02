@@ -24,7 +24,9 @@ When in doubt between "continue" and "refuse with a clear message", MASP should 
 * Node.js 23.6+ runs the TypeScript directly. There is no build step and there are no npm dependencies. Only erasable TypeScript
   syntax is allowed (no `enum`, no parameter properties, no `namespace`), and imports use `.ts` extensions.
 * `npm test`: all tests. One file: `node --test test/t14-land.test.ts`. One test: add `--test-name-pattern="..."`.
-* CLI: `node bin/masp.ts <command>` (or `masp` once installed with `npm install -g <this folder>`).
+* Repository: https://github.com/shopifydevegMS/MASP. Install for users: clone it, then `npm install -g <clone folder>`
+  (npm links to the clone). The installed command goes through `bin/masp.mjs`, a plain-JavaScript launcher that loads `bin/masp.ts`.
+* CLI while developing: `node bin/masp.ts <command>`.
 * `npm run demo`: two simulated sessions on the small fixture theme (`sandbox/demo`, git-ignored).
 
 ## Layout
@@ -69,6 +71,9 @@ Tests enforce most of these. Don't weaken a test to make a change pass.
   `killTree` in `src/serve.ts`). Replacing or deleting a file another process has open fails briefly, so use `withRetry` in `src/util.ts`.
 * **Line endings:** worktrees use CRLF (`core.autocrlf=true`) while Git and the preview store LF. Always compare canonical content
   (`canonicalize` in `src/util.ts`), never raw bytes.
+* **Node will not run TypeScript from inside `node_modules`.** `npm install -g github:...` installs fine but every command
+  then crashes. That's why `package.json` points `bin` at `bin/masp.mjs`, which detects this and prints the clone-and-install steps
+  (covered by a test). Keep the launcher plain JavaScript, and don't add npm dependencies or a publish-to-npm flow without solving this first.
 * **Caches must be keyed by content hash** (as in `src/deps.ts` and `src/scan.ts`) and must never create folders that no longer exist.
 * Test with the real thing when possible. The validator passed a file Shopify then rejected, and only a real run showed it.
   Theme Check now covers that case in `masp lint`.
