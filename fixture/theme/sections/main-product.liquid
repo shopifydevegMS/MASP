@@ -1,0 +1,12 @@
+<section class="main-product">
+  <h1>{{ product.title }}</h1>
+  <div>{{ product.price | money }}</div>
+  {% render 'shared-button', url: product.url, label: 'Buy' %}
+</section>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": []
+}
+{% endschema %}

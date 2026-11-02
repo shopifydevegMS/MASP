@@ -1,0 +1,14 @@
+{
+  "name": "masp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MASP v1: Multi-Agent Shopify Protocol. Local integration controller for several AI coding sessions on one Shopify theme.",
+  "type": "module",
+  "engines": { "node": ">=23.6" },
+  "bin": { "masp": "bin/masp.ts" },
+  "scripts": {
+    "test": "node --test \"test/*.test.ts\"",
+    "demo": "node examples/demo.ts --fresh",
+    "masp": "node bin/masp.ts"
+  }
+}

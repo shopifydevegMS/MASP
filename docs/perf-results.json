@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-29T09:08:40.892Z",
+  "node": "v24.20.0",
+  "results": {
+    "theme size": "1006 files, 9.3 MB",
+    "harness: git repo + 2 worktrees": "7801 ms",
+    "masp init (read commit, write preview + snapshots)": "5647 ms",
+    "cold scan of one worktree (hash every file)": "2383 ms",
+    "warm scan of one worktree (size+mtime cache)": "65 ms",
+    "masp verify (drift + all local checks + deps)": "1999 ms  (0 errors)",
+    "Shopify Theme Check on the whole preview": "13.7 s (0 errors, 120 warnings)",
+    "integration pass, no changes (2 sessions, warm)": "233 ms",
+    "CSS edit -> preview, controller (settle 300 ms), n=10": "median 929 ms, max 1043 ms",
+    "masp ready (template insert) -> published, incl. Node start": "488 ms  (published)",
+    "idle controller (49 s, reconcile every 30 s)": "328 ms CPU = 0.670% of one core, 2 full pass(es), memory 68.5 MB",
+    "controller run total": "30 passes (3 full) in 74 s, 2641 ms CPU, peak 92.4 MB, 22 files read",
+    "controller restart: files re-read on first full pass": "0 (of ~3018 in 2 worktrees + preview), 234 ms CPU",
+    "MASP data folder size": "8.5 MB"
+  }
+}

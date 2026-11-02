@@ -1,0 +1,33 @@
+{
+  "repo": "repo",
+  "preview": "preview",
+  "dataDir": ".masp",
+  "settleMs": 400,
+  "reconcileMs": 30000,
+
+  "critical": [
+    "layout/**",
+    "config/settings_data.json",
+    "config/settings_schema.json",
+    "snippets/shared-*.liquid"
+  ],
+  "shared": ["templates/**/*.json", "sections/*.json", "locales/**", "config/**"],
+  "ignore": [],
+
+  "sessions": [
+    {
+      "id": "A",
+      "worktree": "worktrees/a",
+      "task": "Promo banner on the home page",
+      "owns": ["assets/dev1.css", "sections/a-*.liquid", "snippets/a-*.liquid"],
+      "shared": ["templates/index.json"]
+    },
+    {
+      "id": "B",
+      "worktree": "worktrees/b",
+      "task": "Product page gallery",
+      "owns": ["assets/dev2.css", "sections/b-*.liquid", "snippets/b-*.liquid"],
+      "shared": ["templates/index.json", "templates/product.json"]
+    }
+  ]
+}

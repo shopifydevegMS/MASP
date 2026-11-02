@@ -1,0 +1,15 @@
+<section class="featured-text">
+  {% if section.settings.text != blank %}
+    <p>{{ section.settings.text }}</p>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Featured text",
+  "settings": [
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Hello" }
+  ],
+  "presets": [{ "name": "Featured text" }]
+}
+{% endschema %}

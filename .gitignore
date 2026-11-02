@@ -1,0 +1,9 @@
+# Created by tests, the demo and local experiments; may contain theme files and store logs.
+.tmp/
+sandbox/
+node_modules/
+
+# MASP workspaces (created by 'masp new') should live outside this folder; just in case:
+.masp/
+masp.config.json
+!examples/masp.config.example.json

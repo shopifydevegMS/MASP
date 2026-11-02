@@ -1,0 +1,16 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "MASP Fixture",
+    "theme_version": "1.0.0",
+    "theme_author": "MASP",
+    "theme_documentation_url": "https://example.com",
+    "theme_support_url": "https://example.com"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      { "type": "color", "id": "color_accent", "label": "Accent", "default": "#1a73e8" }
+    ]
+  }
+]
